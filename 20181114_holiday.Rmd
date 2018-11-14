@@ -1,0 +1,74 @@
+---
+title: "Making Holiday Card Designs in R"
+author: "R-Ladies Baltimore"
+date: "November 14, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+With the holiday season coming up, we want our first 
+R-Ladies Baltimore coding project in R to be get into 
+small groups and create holiday designs in R. Here are
+a few examples: 
+
+1. Happy Holidays from 
+[Rafael Irizarry](https://twitter.com/rafalab/status/944217408033746944)
+
+The main part of the code looks like this:  
+```{r}
+N <- 120
+par(bg="black")
+h <- rep(c(2:4,7),N/3)
+h[sample(N,N/5)] <- 0
+plot((-2)^as.complex(seq(1,49,len=100)^0.5),
+        pch=21,bg=h,xlab="", ylab="", xaxt="n",yaxt="n", cex=1.5)
+text(-25,50,"Happy Holidays!",cex=2,col=ifelse(h%%2,"white","black"))
+```
+
+
+2. [Make a Christmas Tree in R with random ornaments/presents](https://www.r-bloggers.com/make-a-christmas-tree-in-r-with-random-ornamentspresents/)
+
+```{r, fig.width=6, fig.height=8}
+# Make the canvas
+plot(1:10,1:10,xlim=c(-5,5),ylim=c(0,10),type="n",xlab="",ylab="",xaxt="n",yaxt="n")
+# Make the branches
+rect(-1,0,1,2,col="tan3",border="tan4",lwd=3)
+polygon(c(-5,0,5),c(2,4,2),col="palegreen3",border="palegreen4",lwd=3)
+polygon(c(-4,0,4),c(3.5,5.5,3.5),col="palegreen4",border="palegreen3",lwd=3)
+polygon(c(-3,0,3),c(5,6.5,5),col="palegreen3",border="palegreen4",lwd=3)
+polygon(c(-2,0,2),c(6.25,7.5,6.25),col="palegreen4",border="palegreen3",lwd=3)
+
+#Add some ornaments
+points(x=runif(4,-5,5),y=rep(2,4),col=sample(c("blue","red"),size=4,replace=T),cex=3,pch=19)
+points(x=runif(4,-4,4),y=rep(3.5,4),col=sample(c("blue","red"),size=4,replace=T),cex=3,pch=19)
+points(x=runif(4,-3,3),y=rep(5,4),col=sample(c("blue","red"),size=4,replace=T),cex=3,pch=19)
+points(x=runif(4,-2,2),y=rep(6.25,4),col=sample(c("blue","red"),size=4,replace=T),cex=3,pch=19)
+points(0,7.5,pch=8,cex=5,col="gold",lwd=3)
+
+# Add some presents
+xPres = runif(10,-4.5,4.5)
+xWidth = runif(10,0.1,0.5)
+xHeight=runif(10,0,1)
+for(i in 1:10){
+  rect(xPres[i]-xWidth[i],0,xPres[i]+xWidth[i],xHeight[i],col=sample(c("blue","red"),size=1))
+  rect(xPres[i]-0.2*xWidth[i],0,xPres[i]+0.2*xWidth[i],xHeight[i],col=sample(c("gold","grey87"),size=1))
+}
+```
+
+# Goal for the next hour
+
+1. Introduce yourself to your neighbor and find a group of people that you want to work with 
+2. Open up R
+3. Your group can either work through the code that's provided (great for beginners in R!) or if you want to challenge yourself, create your own holiday design! If you're feeling really crazy, try making a shiny app. :D 
+
+You can then use the image as a holiday card design to 
+send to your family and friends this holiday season. 
+From 12:50-1pm we will start presentations and ask anyone
+who's interested in discussing their design and talking
+through how they created it. 
+
+Send links to your RMarkdown on the R-Ladies Baltimore Slack. 
+
