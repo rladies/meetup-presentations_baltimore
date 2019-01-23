@@ -1,0 +1,210 @@
+---
+title: Getting data using rvest
+date: January 23, 2019
+output: 
+    html_document:
+        theme: cosmo 
+        toc: true
+        toc_float: true
+        highlight: tango
+        number_sections: false
+fig_width: 5
+fig_height: 5
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      fig.align = "center", out.width = '90%')
+```
+
+First, a huge shout out to Stephanie Hicks. This example is based on lecture notes from her [Advanced Data Science course](https://jhu-advdatasci.github.io/2018/) that she taught last fall at Hopkins.
+
+Before we begin, you will need to install
+these packages:
+
+```{r,eval=FALSE}
+install.packages("rvest")
+```
+
+Now we load a few R packages
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(rvest)
+library(stringr)
+```
+
+
+## Reading in XML or HTML files using `rvest`
+
+Do we want to purchase a book on Amazon? 
+
+Next we are going to learn about what to do if
+your data is on a website (XML or HTML) formatted 
+to be read by humans instead of R.
+
+We will use the (really powerful)
+[rvest](https://cran.r-project.org/web/packages/rvest/rvest.pdf)
+R package to do what is often called 
+"scraping data from the web". 
+
+Before we do that, we need to set up a 
+few things:
+
+* [SelectorGadget tool](http://selectorgadget.com/)
+* [rvest and SelectorGadget guide](https://cran.r-project.org/web/packages/rvest/vignettes/selectorgadget.html)
+* [Awesome tutorial for CSS Selectors](http://flukeout.github.io/#)
+* [Introduction to stringr](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html)
+* [Regular Expressions/stringr tutorial](https://stat545-ubc.github.io/block022_regular-expression.html)
+* [Regular Expression online tester](https://regex101.com/#python)- explains a regular expression as it is built, and confirms live whether and how it matches particular text.
+
+We're going to be scraping [this page](http://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/product-reviews/0387981403/ref=cm_cr_dp_qt_see_all_top?ie=UTF8&showViewpoints=1&sortBy=helpful): it just contains the (first page of) reviews of the 
+ggplot2 book by Hadley Wickham. 
+
+```{r}
+url <- "http://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/product-reviews/0387981403/ref=cm_cr_dp_qt_see_all_top?ie=UTF8&showViewpoints=1&sortBy=helpful"
+```
+
+We use the `rvest` package to download this page.
+
+```{r}
+library(rvest)
+h <- read_html(url)
+```
+
+Now `h` is an `xml_document` that contains the contents of the page:
+
+```{r}
+h
+```
+
+How can you actually pull the interesting 
+information out? That's where CSS selectors come in.
+
+### CSS Selectors
+
+CSS selectors are a way to specify a subset of 
+nodes (that is, units of content) on a web page
+(e.g., just getting the titles of reviews). 
+CSS selectors are very powerful and not too 
+challenging to master- here's 
+[a great tutorial](http://flukeout.github.io/#) 
+But honestly you can get a lot done even with 
+very little understanding, by using a tool 
+called SelectorGadget.
+
+Install the [SelectorGadget](http://selectorgadget.com/) 
+on your web browser. (If you use Chrome you can
+use the Chrome extension, otherwise drag the 
+provided link into your bookmarks bar). 
+[Here's a guide for how to use it with rvest to "point-and-click" your way to a working selector](http://selectorgadget.com/).
+
+For example, if you just wanted the titles, 
+you'll end up with a selector that looks 
+something like `.review-title`. You can pipe
+your HTML object along with that selector 
+into the `html_nodes` function, to select 
+just those nodes:
+
+```{r}
+h %>%
+  html_nodes(".review-title")
+```
+
+It also seems like the selector `.a-text-bold:nth-child(3)` would work. 
+
+But you need the text from each of these, not the full tags. Pipe to the `html_text` function to pull these out:
+
+```{r}
+review_titles <- h %>%
+  html_nodes(".review-title") %>%
+  html_text()
+review_titles
+```
+
+Now we've extracted something useful! Similarly, 
+let's grab the format (hardcover or paperback).
+Some experimentation with SelectorGadget 
+shows it's:
+
+```{r}
+h %>%
+  html_nodes(".a-size-mini.a-color-secondary") %>%
+  html_text()
+```
+
+Now, we may be annoyed that it always
+starts with `Format: `. Let's introduce 
+the `stringr` package.
+
+```{r}
+formats <- h %>%
+  html_nodes(".a-size-mini.a-color-secondary") %>%
+  html_text() %>%
+  str_replace("Format: ", "")
+formats
+```
+
+We could do similar exercise for extracting
+the number of stars and whether or not someone
+found a review useful. This would help us decide
+if we were interested in purchasing the book! 
+
+
+## A slightly more complicated example
+
+This example will compile some college basketball game statistics from an ESPN website. It is based on code from a [GitHub repo](https://github.com/schloerke/r-for-data-science-purdue/blob/master/03-29-17-web-scraping.Rmd) from [Barret Schloerke](http://schloerke.com). I have tried to fill in some details. 
+
+Here is the website we will be working with, and we want to pull statistics for 2016:
+```{r}
+site_url <- "http://www.espn.com/mens-college-basketball/statistics/team/_/stat/scoring-per-game/sort/avgPoints/year/2016/seasontype/2"
+year<-2016
+```
+
+
+We want to pull the links for each of these teams -- what CSS do we need?
+
+After some fiddling we can find it and read in the data.
+```{r}
+team_css <- "td:nth-child(2) a"
+html <- read_html(site_url)
+html %>%
+  html_nodes(team_css) %>%
+  html_attr("href") %>%
+  str_match("/id/(\\d+)") %>%
+  print() ->
+id_matches
+```
+
+I had to spend some time picking through this code to follow exactly what was going on, and I still found the output of `str_match` somewhat confusing. But basically, the idea is to pull an ID value associated with each team. Then using these IDs, create a set of URLs for each team that will link to 2016 stats:
+
+```{r}
+team_ids <- id_matches[,2] %>% print()
+team_urls <- str_c("http://www.espn.com/mens-college-basketball/team/stats/_/id/", team_ids, "/year/", year)
+```
+
+This will pull the statisitcs for West Virginia and make them into a table. I have not been able to figure out exactly how the CSS `.mod-content table` was selected here. Any thoughts?
+
+```{r}
+west_virginia_url <- team_urls[40] %>% print()
+html <- read_html(west_virginia_url)
+stats <- html %>% html_nodes(".mod-content table") # grab both tables
+game_statistics <- stats[[1]] %>% html_table() # grab season avg table
+game_statistics <- game_statistics[-1:-2, ] # remove bad headers
+game_statistics <- game_statistics[-nrow(game_statistics), ] # remove totals
+game_statistics[-1] <- lapply(game_statistics[-1], as.numeric) # make numeric
+game_statistics
+```
+
+
+
+## Additional resources
+
+In putting this together, I found a few more examples that I think could be of interest:
+
+* A [detailed tutorial](http://zevross.com/blog/2015/05/19/scrape-website-data-with-the-new-r-package-rvest/) that goes into good detail about CSS selectors. It may be a little bit out of date, but I think it is still valuable.
+* Another [quite detailed tutorial](https://www.analyticsvidhya.com/blog/2017/03/beginners-guide-on-web-scraping-in-r-using-rvest-with-hands-on-knowledge/) that shows examples of pulling several elements from a page and then doing some visualizations.
+* A [homework assignment](https://www2.stat.duke.edu/courses/Fall18/sta112.01/hw/hw-06/hw-06.html) from one of [Mine Cetinkaya-Rundel's](http://www2.stat.duke.edu/~mc301/) courses at Duke. If you want the solutions you can send her a message on Slack (she is on the R-Ladies Community Slack working group) or ask me for help.
+* In response to a request from Hadley Wickham, a bunch of people responded with additional interesting examples [here](https://community.rstudio.com/t/whats-the-most-interesting-use-of-rvest-youve-seen-in-the-wild/745/3).
+
+In general, it is possible that the websites have changed since these tutorials were written, so you may need to play around with the exact CSS fields you need to get them to work.
