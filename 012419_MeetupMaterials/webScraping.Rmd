@@ -143,6 +143,11 @@ formats <- h %>%
   html_text() %>%
   str_replace("Format: ", "")
 formats
+
+# after a question about how to merge together titles and formats, someone suggested map from the purrr package
+# this does not actually work, but captures the general idea
+# library(purrr)
+# h %>% map(c(".review-title",".a-size-mini.a-color-secondary"), html_nodes) %>% html_text()
 ```
 
 We could do similar exercise for extracting

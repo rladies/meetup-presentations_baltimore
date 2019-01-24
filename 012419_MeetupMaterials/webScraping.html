@@ -376,7 +376,7 @@ h &lt;-<span class="st"> </span><span class="kw">read_html</span>(url)</code></p
 <p>For example, if you just wanted the titles, you’ll end up with a selector that looks something like <code>.review-title</code>. You can pipe your HTML object along with that selector into the <code>html_nodes</code> function, to select just those nodes:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;.review-title&quot;</span>)</code></pre></div>
-<pre><code>## {xml_nodeset (10)}
+<pre><code>## {xml_nodeset (12)}
 ##  [1] &lt;span data-hook=&quot;review-title&quot; class=&quot;a-size-base review-title a-te ...
 ##  [2] &lt;span data-hook=&quot;review-title&quot; class=&quot;a-size-base review-title a-te ...
 ##  [3] &lt;a data-hook=&quot;review-title&quot; class=&quot;a-size-base a-link-normal review ...
@@ -386,7 +386,9 @@ h &lt;-<span class="st"> </span><span class="kw">read_html</span>(url)</code></p
 ##  [7] &lt;a data-hook=&quot;review-title&quot; class=&quot;a-size-base a-link-normal review ...
 ##  [8] &lt;a data-hook=&quot;review-title&quot; class=&quot;a-size-base a-link-normal review ...
 ##  [9] &lt;a data-hook=&quot;review-title&quot; class=&quot;a-size-base a-link-normal review ...
-## [10] &lt;a data-hook=&quot;review-title&quot; class=&quot;a-size-base a-link-normal review ...</code></pre>
+## [10] &lt;a data-hook=&quot;review-title&quot; class=&quot;a-size-base a-link-normal review ...
+## [11] &lt;a data-hook=&quot;review-title&quot; class=&quot;a-size-base a-link-normal review ...
+## [12] &lt;a data-hook=&quot;review-title&quot; class=&quot;a-size-base a-link-normal review ...</code></pre>
 <p>It also seems like the selector <code>.a-text-bold:nth-child(3)</code> would work.</p>
 <p>But you need the text from each of these, not the full tags. Pipe to the <code>html_text</code> function to pull these out:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">review_titles &lt;-<span class="st"> </span>h <span class="op">%&gt;%</span>
@@ -402,23 +404,31 @@ review_titles</code></pre></div>
 ##  [7] &quot;The best guide to the best graphics (I think) out there.&quot;                                    
 ##  [8] &quot;Graphing in R&quot;                                                                               
 ##  [9] &quot;Excellent content, poor adaptation to kindle&quot;                                                
-## [10] &quot;Excellent R resource for the Kindle&quot;</code></pre>
+## [10] &quot;Excellent R resource for the Kindle&quot;                                                         
+## [11] &quot;Great book, outdated&quot;                                                                        
+## [12] &quot;Indispensable resource for ggplot2 users&quot;</code></pre>
 <p>Now we’ve extracted something useful! Similarly, let’s grab the format (hardcover or paperback). Some experimentation with SelectorGadget shows it’s:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;.a-size-mini.a-color-secondary&quot;</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">html_text</span>()</code></pre></div>
-<pre><code>## [1] &quot;Format: Paperback&quot;      &quot;Format: Paperback&quot;     
-## [3] &quot;Format: Kindle Edition&quot; &quot;Format: Paperback&quot;     
-## [5] &quot;Format: Paperback&quot;      &quot;Format: Kindle Edition&quot;
-## [7] &quot;Format: Kindle Edition&quot; &quot;Format: Kindle Edition&quot;</code></pre>
+<pre><code>##  [1] &quot;Format: Paperback&quot;      &quot;Format: Paperback&quot;     
+##  [3] &quot;Format: Kindle Edition&quot; &quot;Format: Paperback&quot;     
+##  [5] &quot;Format: Paperback&quot;      &quot;Format: Kindle Edition&quot;
+##  [7] &quot;Format: Kindle Edition&quot; &quot;Format: Kindle Edition&quot;
+##  [9] &quot;Format: Paperback&quot;      &quot;Format: Paperback&quot;</code></pre>
 <p>Now, we may be annoyed that it always starts with <code>Format:</code>. Let’s introduce the <code>stringr</code> package.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">formats &lt;-<span class="st"> </span>h <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&quot;.a-size-mini.a-color-secondary&quot;</span>) <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">html_text</span>() <span class="op">%&gt;%</span>
 <span class="st">  </span><span class="kw">str_replace</span>(<span class="st">&quot;Format: &quot;</span>, <span class="st">&quot;&quot;</span>)
 formats</code></pre></div>
-<pre><code>## [1] &quot;Paperback&quot;      &quot;Paperback&quot;      &quot;Kindle Edition&quot; &quot;Paperback&quot;     
-## [5] &quot;Paperback&quot;      &quot;Kindle Edition&quot; &quot;Kindle Edition&quot; &quot;Kindle Edition&quot;</code></pre>
+<pre><code>##  [1] &quot;Paperback&quot;      &quot;Paperback&quot;      &quot;Kindle Edition&quot; &quot;Paperback&quot;     
+##  [5] &quot;Paperback&quot;      &quot;Kindle Edition&quot; &quot;Kindle Edition&quot; &quot;Kindle Edition&quot;
+##  [9] &quot;Paperback&quot;      &quot;Paperback&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># after a question about how to merge together titles and formats, someone suggested map from the purrr package</span>
+<span class="co"># this does not actually work, but captures the general idea</span>
+<span class="co"># library(purrr)</span>
+<span class="co"># h %&gt;% map(c(&quot;.review-title&quot;,&quot;.a-size-mini.a-color-secondary&quot;), html_nodes) %&gt;% html_text()</span></code></pre></div>
 <p>We could do similar exercise for extracting the number of stars and whether or not someone found a review useful. This would help us decide if we were interested in purchasing the book!</p>
 </div>
 </div>
