@@ -1,0 +1,322 @@
+---
+title: Introduction to R Package Development 2019
+author: Stephanie Hicks
+date: '2019-05-20'
+slug: introduction-to-r-package-development-2019
+categories:
+  - blog
+tags:
+  - blog
+header:
+  caption: ''
+  image: ''
+  preview: yes
+output: 
+    html_document:
+        theme: cosmo 
+        toc: true
+        toc_float: true
+        highlight: tango
+        number_sections: false 
+---
+
+# Motivation
+
+In this tutorial, you are going to create your 
+own package using the `usethis` workflow R package. 
+For our purposes, we are using the code provided on the 
+[`usethis`](https://usethis.r-lib.org) website and the 
+[blog from Emil Hvitfeldt](https://www.hvitfeldt.me/blog/usethis-workflow-for-package-development/). 
+
+This package is great because it automates repetitive tasks that 
+arise during project setup and development, both for 
+R packages and non-package projects.
+
+## Getting started with the `usethis` package 
+
+### Installation
+
+Install the released version of `usethis` from CRAN:
+
+```{r, eval=FALSE}
+install.packages("usethis")
+```
+
+Or install the development version from GitHub with:
+
+```{r, eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("r-lib/usethis")
+```
+
+You may also need these packages: 
+
+```{r, eval=FALSE}
+install.packages("testthat")
+install.packages("spelling")
+```
+
+
+# Creating your R package using `usethis`
+
+Most `use_*()` functions operate on the active project:
+literally, a directory on your computer. If you have just
+used `usethis` to create a new package or project, that
+will be the active project. Otherwise, `usethis` verifies
+that current working directory is or is below a valid 
+project directory and that becomes the active project.
+
+A few `usethis` functions have no strong connections to 
+projects and will expect you to provide a path.
+
+Below is a quick look at how `usethis` can help to set up a 
+package. But remember, many `usethis` functions are also 
+applicable to analytical projects that are not packages.
+
+Let's load the library 
+
+```{r}
+library(usethis)
+```
+
+Next we create a path to a temporary folder and call the 
+package `mypkg`.
+
+```{r}
+path <- file.path(tempdir(), "mypkg")
+path
+```
+
+Then, we use the `create_package()` function 
+to create the skeleton of this package. 
+
+## Create the package 
+
+```{r}
+create_package(path)
+```
+
+If you are inside of RStudio, this will (hopefully)
+open up a new RStudio session. Also, `usethis` is
+quite chatty, explaining what it’s doing 
+and assigning you tasks. For example, 
+
+✔ indicates something usethis has done for you. 
+
+● indicates that you’ll need to do some work yourself.
+
+**For this tutorial, we are not in an interactive session**. 
+So we use the `proj_activate(path)` function with the 
+`path` argument to change the working directory to the 
+temporary path that we've created. 
+
+**NOTE**: You only need to run `proj_activate(path)` 
+if you are not in an interactive session. 
+
+```{r}
+proj_activate(path)
+```
+
+## Setting up git/github
+
+We won't do it here, but you can use the functions 
+below to help set link the pakckage to GitHub. If you 
+want to explore this, check out 
+[Jenny Bryan tutorial on getting setup](https://github.com/r-lib/usethis/blob/master/vignettes/articles/usethis-setup.Rmd). 
+
+```{r, eval=FALSE}
+use_git()
+use_github()
+```
+
+## One time modifications
+
+Now that we are up and running there is a bunch of 
+things we should do before we start writing code. 
+Firstly we will go over all the actions that only 
+have to be done once and get those out of the way.
+
+
+### Setting up your license
+
+There are several types of licenses you can pick from, 
+for example 
+
+```{r, eval=FALSE}
+use_mit_license()
+use_gpl3_license()
+use_apl2_license()
+use_cc0_license()
+```
+
+Let's select the MIT license 
+
+```{r}
+use_mit_license("Margaret Taub")
+```
+
+The choice of license is beyond the scope of the tutorial, 
+but we [refer readers here](http://r-pkgs.had.co.nz/description.html#license) 
+to learn more about types of licenses. 
+
+
+### Add README.md files 
+
+Now we add the readme files, this is done using
+the `use_readme_md()` function. This will create a 
+readme.md file that you can edit and knit 
+as you normally would.
+
+```{r}
+use_readme_md()
+```
+
+### Adding continuous integration (optional)
+
+Next we will setup some continuous integration. 
+This is completely optional, but it's recommended. 
+A nice intro to this topic is from 
+[Julia Silge](https://juliasilge.com/blog/beginners-guide-to-travis/). 
+
+For a quick summary, we will extract a section from
+her blog post: 
+
+> "If you have written an R package, you probably have 
+gotten into the habit of running R CMD check on a 
+(hopefully) regular basis to check for common problems. 
+It automatically detects lots of problems that can arise 
+that you might not otherwise notice. Also you probably 
+have put your package on GitHub, for version control and 
+also to be able to share your code with other people and
+track issues and whatnot. The idea behind continuous 
+integration is that CI will automatically run R CMD check 
+(along with your tests, etc.) every time you push a commit
+to GitHub. You don’t have to remember to do this; CI 
+automatically checks the code after every commit. Travis-CI
+is a continuous integration service that builds and tests 
+projects that are hosted on GitHub; if your R package is 
+open source (i.e., not private), then using Travis-CI is free." 
+
+To set up CI, use the following `usethis` functions: 
+
+```{r, eval=FALSE}
+use_travis()
+use_appveyor()
+use_coverage(type = c("codecov"))
+```
+
+Again, this is outside the scope of this tutorial, but we 
+leave it here for you to explore. 
+
+### Add unit testing
+
+You will most likely also want to include 
+unit testing, this can be achieved using the 
+[`testthat`](https://cran.r-project.org/package=testthat)
+package. To do this, use the `use_testthat()` function. 
+
+```{r}
+use_testthat()
+use_test("my-test")
+```
+
+Additional information about testing can be found [`here`](http://r-pkgs.had.co.nz/tests.html).
+
+### Add spell check
+Next we will add spell checking to our workflow, this is done with
+```{r}
+# install.packages("spelling")
+use_spell_check()
+```
+
+Make sure that the spelling package is installed before running.
+
+### Create data folder and objects
+If you are going to include data in your package, you 
+would want to include a data-raw folder where the data
+is created/formatted.
+
+```{r}
+use_data_raw()
+
+x <- 1
+y <- 2
+use_data(x, y)
+```
+
+### Add NEWS file
+
+Lastly if you plan on doing a little larger project a 
+NEWS file is very handy to keep track on what is
+happening in your package.
+
+```{r}
+use_news_md()
+```
+
+### Add packages to DESCRIPTION file
+You can also add packages to the DESCRIPTION file 
+
+For example, here we are adding the `MASS` package 
+to the Suggests description field. 
+
+```{r}
+use_package("MASS", "Suggests")
+use_package("dplyr")
+```
+
+### Set up documentation files 
+
+We can set up the documention files using Roxygen
+
+```{r}
+use_roxygen_md()
+```
+
+(You may need to install the `roxygen` package first.)
+
+## Multiple time modifications
+
+Now that we have setup all the basics, 
+the general development can begin.
+
+You typical workflow will be repeating the following
+steps in the order that suits your flow
+
+* Write some code
+* Restart R Session Cmd+Shift+F10 (Ctrl+Shift+F10 for Windows)
+* Build and Reload Cmd+Shift+B (Ctrl+Shift+B for Windows)
+* Test Package Cmd+Shift+T (Ctrl+Shift+T for Windows)
+* Check Package Cmd+Shift+E (Ctrl+Shift+E for Windows)
+* Document Package Cmd+Shift+D (Ctrl+Shift+D for Windows)
+
+### Create `.R` files and unit tests for functions
+
+```{r}
+use_r("function_name")
+```
+
+This function is very important and you will using it a lot, 
+not only will it create the files you save your functions 
+in, but it will also open the files if they are already 
+created, this makes navigating your R files much easier. 
+Once you have created your function it is time to add 
+some tests! This is done using the `use_test()` function,
+and it works much the same way as the `use_r()`.
+
+```{r}
+use_test("function_name")
+```
+
+### Create a vignette 
+
+An vignette provides a nice piece of documentation once you have added a bunch of capabilities to your package.
+
+```{r}
+use_vignette("my_cool_vignette")
+```
+
+# Summary
+
+You should be off and running now! 
+
