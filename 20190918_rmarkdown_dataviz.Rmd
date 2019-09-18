@@ -1,0 +1,125 @@
+---
+title: "Data Visualization with Rmarkdown"
+author: "R Ladies 2019"
+date: "9/18/2019"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=F}
+# up there is the yaml header, if you launch from Rstudio it makes it for you
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libs, include=F}
+# load libraries some of these libraries you will need to install with install.packages("library")
+library(tidyverse)
+library(plotly)
+library(maps)
+library(shiny)
+library(knitr)
+library(kableExtra)
+```
+## R Markdown basics 
+
+We can type plain text for comments and descriptions about the data and analysis
+
+### we can change the size of our text
+
+and make important things __bold__
+
+or set up [links](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) to helpful resources 
+
+we can also print equations in the text $A = \pi*r^{2}$ 
+
+and highlight important things in block text 
+
+>Embedding code can be done in two ways
+>
+>in-line code: two plus two equals `r 2 + 2` 
+>
+>or in code chunks:
+
+```{r inline, eval=T, include = T, tidy = T}
+p <- 2 + 2 
+print(p)
+```
+
+## Let's get started
+```{r storms, include=F}
+# first save this data to .RData so it will be found when we knit 
+dat <- storms
+save(dat, file="dat.RData")
+load("dat.RData")
+```
+
+### Including Plots
+
+```{r types, echo=F}
+# number of each type of storm per year
+# first we want to parse the data using tidyverse then pipe it into ggplot for visualization
+# echo = FALSE because we don't want this code printed in our doc but we want the output to be printed 
+p1 <- dat %>% # load data 
+  group_by(year, status) %>% # pipe data into grouping by year and status
+  summarise(number = n()) %>% # count the number of storms of each status per year 
+  ggplot(aes(x = year, y  = number, fill = status))+theme_classic()+labs() +
+  geom_bar(stat = "identity", position = "stack") + labs(x = "year", y = "number of storms") # plot a bargraph of the number of storms per year making each status and different color 
+
+(gg <- ggplotly(p1)) # use the plotly package to make the graph interactive
+```
+
+```{r speed, echo=F}
+p2 <- dat %>%
+  unite("Date", c(year,month,day), sep = "-") %>% # format the date so we can order the data by date
+  mutate(Date = as.Date(Date)) %>%
+  group_by(Date,status) %>% # group by the date and the statys and calculate mean wind spees per day for each storm type
+  summarise(wind = mean(wind)) %>%
+  ggplot(aes(x = wind))+geom_histogram(aes(fill = status), alpha = .4, bins = 30)+ theme_classic()+labs(x = "wind speed", y = "count") # plot a histogram of the average wind speed per day and color by storm type, alpha is the opacity 
+(gg <- ggplotly(p2)) # make interactive with plotly 
+```
+
+##Let's make some summary stats
+
+```{r sum, include=FALSE}
+# include = FALSE because we don't want any of this printed in our doc 
+sum <- dat %>%
+  group_by(status) %>%
+  summarise(wind = mean(wind), pressure = mean(pressure))
+```
+
+###Mean Wind Speed:
+
+Hurricane: `r sum$wind[1]` mph
+
+Tropical Depression: `r sum$wind[2]` mph
+
+Tropical Storm: `r sum$wind[3]` mph
+
+## Including Tables
+```{r echo = F, results="asis"}
+# the kable package is an easy way to make nice looking tables 
+kable(dat[1:20,1:11], caption = "a knitr table") %>%
+  kable_styling(bootstrap_options = "striped", fixed_thead = T,font_size = 18) %>%
+   scroll_box(width = "700px", height = "200px")
+```
+
+## Reactive plotting
+```{r slider, echo=F}
+
+# we can use the shiny package to make interactive plots 
+# first we set the input options 
+inputPanel(
+ selectInput("year", label = "Year:",
+choices = dat$year),
+sliderInput("wind", label = "Wind Speed:", min = min(dat$wind), max = max(dat$wind), value = min(dat$wind))
+)
+# then plot with the variables that the user inputs 
+renderPlot({
+  subdat <- subset(dat, year == input$year & wind >= input$wind)
+ggplot() +
+  geom_polygon(data = map_data("world"),
+  aes(x = long, y = lat, group = group)) + geom_point(data = subdat, aes(x = long, y = lat, color = name))+theme_bw()
+ })
+
+
+```
