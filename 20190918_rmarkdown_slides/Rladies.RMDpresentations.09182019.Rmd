@@ -1,0 +1,277 @@
+---
+title: "Creating Slide Decks using R Markdown"
+subtitle: "RLadies - Baltimore"
+author: "McKinzie Garrison"
+date: "Sept 18, 2019"
+output:
+    beamer_presentation: 
+        theme: Madrid
+        colortheme: dolphin
+        fonttheme: structurebold
+        slide_level: 1
+        includes:
+            in_header: preamble.tex
+            keep_tex: yes
+
+        
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = FALSE)
+```
+
+```{r,eval=TRUE,echo=FALSE}
+def.chunk.hook <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\\", options$size, "\n\n",x,"\n\n \\normalsize"),x)
+})
+```
+
+
+# Benefits
+
+- Fast slide deck creation.  
+
+- Reproducible work.  
+  
+- Reuseable.
+
+
+# Setup and installation
+
+## Packages:  
+- rmarkdown  
+- tinytex  
+    + PDF output; anything missing in LaTeX.
+- pandoc  
+    + command line installation 
+
+```{r, rmarkdown, results='hide', eval=FALSE}
+if(!require(pacman)){
+    install.packages('pacman')
+    library(pacman)
+}
+p_load(rmarkdown, tinytex)
+```
+
+
+
+# Types of presentation outputs
+
+- ioslides  
+- slidy  
+- powerpoint  
+- .Rpres  
+
+>- beamer
+
+
+# Creating a slide deck with beamer output
+
+\btwocol  
+![](images/Screen Shot 2019-09-10 at 11.02.09 AM.png){width=50%}
+
+![](images/NewRMarkdown.png){width=50%}
+
+\etwocol  
+
+# Default Rmarkdown text
+
+![](images/default_beamerMarkdown.png)
+
+# YAML metadata  
+
+## Format setup  
+\btwocol  
+![](images/newBeamerMetadata.png){width=50%}
+
+- Title slide  
+- Desired output format  
+- Formatting suboptions  
+
+\etwocol  
+
+# slide_level suboption for beamer presentations
+
+## Example: slide_level: 2
+
+\btwocol  
+![](images/slide_level2_text.png){width=50%}
+
+![](images/slide_level2_slides.png){height=80%}
+\etwocol  
+
+# slide_level: 1
+\btwocol
+![](images/improvedslidelevel1.png){width=64%}
+
+
+![](images/slidlevel1_slides.png)
+\etwocol  
+
+# Suboptions specific for the specified output format  
+
+- `?rmarkdown::beamer_presentation`  
+
+## Documentation  
+
+![](images/beamer_presentationDocumentation.png){width=95%}
+
+
+
+# Using LaTeX packages
+
+## preamble.tex
+
+\btwocol
+![](images/preambleteximage.png){width=50%}
+
+![](images/preambletexyaml.png)
+\etwocol  
+
+# Invoking the LaTeX packages in the .Rmd file  
+
+![](images/improvedLaTeXinvoke.png){width=80%}
+
+
+# Markdown syntax - Reference Guide
+
+\btwocol  
+![](images/markdownquickreference.png){width=60%}
+
+![](images/markdownQUICKREF.png){width=70%}
+\etwocol  
+
+# Embedding code chunks  
+
+````
+`r ''````{r optionalname}
+# code here
+```
+````
+
+\btwocol
+![](images/codechunksuboptions.png){width=40%}
+
+![](images/codechunkoptionsWHOLE.png){width=60%}
+\etwocol
+
+```{r eval=TRUE, testdata, echo=TRUE, size="scriptsize"}
+set.seed(7)
+testnumbers <- rnorm(100,mean=0,sd=1)
+summary(testnumbers)
+```
+
+# Embedding code chunks  
+
+![](images/changecommentcodechunk.png){width=70%}
+
+```{r, testdata_changecomments, echo=TRUE,eval=TRUE,comment=''}
+set.seed(7)
+testnumbers <- rnorm(100,mean=0,sd=1)
+summary(testnumbers)
+```
+
+
+# Inline code  
+
+`` `r
+function()` `` 
+
+
+```{r, embedinlinecode, echo=TRUE,eval=TRUE,comment=''}
+set.seed(7)
+testnumbers <- rnorm(100,mean=0,sd=1)
+```
+
+![](images/boldedinlinecode.png){width=80%}
+
+**Mean of testnumbers:** `r mean(testnumbers)`  
+
+**Standard deviation of testnumbers:** `r sd(testnumbers)`
+
+
+# Producing plots  
+
+
+```{r,plots,comment='',eval=TRUE,echo=TRUE,size="scriptsize",fig.dim=c(3,2.3),fig.align="center"}
+library(ggplot2)
+boolean <- factor(rep(c('TRUE','FALSE'),each=200))
+num <- c(rnorm(200), rnorm(200,mean=5))
+dat <- data.frame(boolean, num)
+ggplot(dat,
+       aes(x = boolean, y = num, fill= boolean))+geom_boxplot()+guides(fill=FALSE)
+```
+
+# Render the markdown file
+
+\btwocol  
+
+- `render("filename.Rmd", "beamer_presentation")`  
+- Mac: `Cmd + Shift + K`  
+- Windows: `Ctrl + Shift + K`  
+
+![](images/knitrbeamer.png){width=40%}  
+
+\etwocol
+
+
+# Caching & Global Chunk Options  
+
+## Individual code chunks:  
+
+````
+`r ''````{r, codechunkname, cache=TRUE, eval=FALSE}
+# default: cache = FALSE
+# computation
+```
+````
+
+## Global control of code chunks:  
+
+````
+`r ''````{r, global}
+knitr::opts_chunk$set(cache = TRUE)
+```
+````
+
+# Conclusion  
+
+## Slide deck creation using Rmarkdown  
+- Install tinytex, rmarkdown, pandoc  
+- Output format (ie - beamer)  
+- YAML metadata  
+- Content:  
+  + Embedded code  
+  + Plots  
+  + Other information  
+- Render  
+- Caching  
+
+
+# References and help
+
+## General Markdown Help
+https://www.rstudio.com/resources/cheatsheets/
+https://bookdown.org/yihui/rmarkdown/
+
+## Specific Output Format Help
+`?rmarkdown::beamer_presentation`  
+https://rmarkdown.rstudio.com/articles_beamer.html
+
+# Acknowledgements
+
+\btwocol
+- **Wheelan lab**  
+    + Sarah Wheelan  
+    + Heather Wick  
+    + Alyza Skaist  
+    + Anuj Gupta  
+    
+- **Marchionni lab**  
+
+
+![](images/bothhexRMD_knitr.png){width=45%}   
+\etwocol
+

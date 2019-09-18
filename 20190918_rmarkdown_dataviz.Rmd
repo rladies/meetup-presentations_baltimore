@@ -1,9 +1,11 @@
 ---
 title: "Data Visualization with Rmarkdown"
-author: "R Ladies 2019"
+author: "Ariel Gershman"
 date: "9/18/2019"
 runtime: shiny
-output: html_document
+output:
+  html_document:
+    code_download: true
 ---
 
 ```{r setup, include=F}
