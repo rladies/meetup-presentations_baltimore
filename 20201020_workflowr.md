@@ -6,6 +6,9 @@ We had a virtual meetup event where we discussed creating and sharing reproducib
   - Vebashini Naidoo (https://www.linkedin.com/in/vebashini-naidoo-4260a96a/)
   - Inger Fabris-Rotelli (https://www.up.ac.za/statistics/article/2326974/dr-inger-fabris-rotelli)
   
+**YouTube**: 
+  - A recording of the meetup is available here: https://www.youtube.com/watch?v=xY0jLTWMHkI
+
 In preparation, Vebashini and Inger asked everyone to follow the instructions below prior to the tutorial. They have also linked to the tutorial slides themselves.
 
 - The tutorial slides: https://bit.ly/useR-workflowr-slides
