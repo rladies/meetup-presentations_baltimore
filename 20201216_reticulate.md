@@ -4,9 +4,10 @@ We had a virtual meetup event where we discussed leveraging Python within R and 
 
 **Presenter**:
   - Tiffany Timbers (https://www.tiffanytimbers.com). Department of Statistics and a Co-Director for the Master of Data Science program (Vancouver Option) at the University of British Columbia.
+  	- presentation slides: https://github.com/ttimbers/intro-to-reticulate/blob/main/slides/reticulate-intro.pdf
   
 **YouTube**: 
-  - A recording of the meetup is available here: coming soon.
+  - A recording of the meetup is available here: https://www.youtube.com/watch?v=U3ByGh8RmSc
   
 In preparation, Tiffany asked for folks who would like to follow along, please follow these installation/setup instructions: https://github.com/ttimbers/intro-to-reticulate.
 
