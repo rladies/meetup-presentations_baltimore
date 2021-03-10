@@ -2,7 +2,7 @@ We had a virtual meetup event where we talked about tidymodels (https://www.tidy
 
 The meetup was on Mar 9, 2021 at our [R-Ladies event](https://www.meetup.com/rladies-baltimore/events/273335353): 
 
-**Welcome slides**: [Google slides](https://docs.google.com/presentation/d/1LO3rqtVp9zubNKdT6wXNatawF_wY3quaclapIg-UYW4/edit?usp=sharing)
+**Welcome slides**: [Google slides](https://docs.google.com/presentation/d/1-2NxXbhkbNGeZ5CAH5jdooUHThybWl9X-IHg_SRw9IY/edit?usp=sharing)
 
 **Presenter**:
   - Rebecca Barter (http://www.rebeccabarter.com), a Postdoctoral Fellow at UC Berkeley
