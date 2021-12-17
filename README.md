@@ -1,7 +1,8 @@
 
-<img src="https://github.com/rladies/starter-kit/blob/master/logo/R-LadiesGlobal_RBG_online_LogoWithText_Horizontal.png" data-canonical-src="https://github.com/rladies/starter-kit/blob/master/logo/R-LadiesGlobal_RBG_online_LogoWithText_Horizontal.png" height="100" />
+<img src="https://github.com/rladies/branding-materials/blob/main/logo/R-LadiesGlobal_RBG_online_LogoWithText_Horizontal.png" data-canonical-src="https://github.com/rladies/branding-materials/blob/main/logo/R-LadiesGlobal_RBG_online_LogoWithText_Horizontal.png" height="100" />
 
 # R-Ladies Baltimore
+
 Founded in May 2018.
 
 ## Upcoming events
@@ -11,7 +12,7 @@ See [here](https://rladies-baltimore.github.io/).
 R-Ladies lives through its participants. We *ALWAYS* need speakers for meetups! Please get in touch with us at <bmore@rladies.org>. 
 
 ## Further information
-Organizers are: [Stephanie Hicks](http://www.stephaniehicks.com), [Margaret Taub](http://www.biostat.jhsph.edu/~mtaub/About.html), and [Rachel Sparklin](https://bcmb.bs.jhmi.edu/people/students/rachael-sparklin). 
+Organizers are: [Stephanie Hicks](http://www.stephaniehicks.com), [Margaret Taub](http://www.biostat.jhsph.edu/~mtaub/About.html), [Rachel Sparklin](https://bcmb.bs.jhmi.edu/people/students/rachael-sparklin), and [Sowmya Parthiban](https://twitter.com/swmyprtbn).
 
 You can contact us via <bmore@rladies.org>.
 
