@@ -10,3 +10,4 @@ The meetup was on Dec 14, 2021 at our R-Ladies event: https://www.meetup.com/rla
 
 **YouTube**: 
   - A recording of the meetup is available here: https://youtu.be/4s5yAxa99cE
+
